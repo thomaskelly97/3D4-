@@ -11,6 +11,10 @@
 int pnum;  // number updated when producer runs.
 int csum;  // sum computed using pnum when consumer runs.
 
+//Create mutex variable 
+pthread_mutex_t mutex; 
+pthread_cond_t condc, condp; 
+
 int (*pred)(int); // predicate indicating number to be consumed
 
 int produceT() {
@@ -20,34 +24,43 @@ int produceT() {
 
 void *Produce(void *a) {
   int p;
-
   p=1;
   while (p) {
+    pthread_mutex_lock(&mutex);
+   // pthread_cond_wait(&condc,&mutex);
     printf("producer thinking...\n");
     sleep(1);
     printf("..done!\n");
     p = produceT();
     printf("PRODUCED %d\n",p);
+    
+    pthread_mutex_unlock(&mutex);
+    pthread_cond_signal(&condc);
   }
   printf("EXIT-P\n");
 }
 
 
 int consumeT() {
-  if ( pred(pnum) ) { csum += pnum; }
+  if ( pred(pnum) ) { 
+      csum += pnum; 
+    }
   return pnum;
 }
 
 void *Consume(void *a) {
   int p;
-
   p=1;
   while (p) {
+    pthread_mutex_lock(&mutex);
+    pthread_cond_wait(&condc,&mutex);
     printf("consumer thinking...\n");
     sleep(rand()%3);
     printf("..done!\n");
     p = consumeT();
     printf("CONSUMED %d\n",csum);
+    pthread_cond_signal(&condp);
+    pthread_mutex_unlock(&mutex);
   }
   printf("EXIT-C\n");
 }
@@ -56,8 +69,11 @@ void *Consume(void *a) {
 int main (int argc, const char * argv[]) {
   // the current number predicate
   static pthread_t prod,cons;
+
+  pthread_mutex_init (&mutex, 0); //initialise the mutex variable
 	long rc;
 
+  //This just checks which 'cond' you want to use 
   pred = &cond1;
   if (argc>1) {
     if      (!strncmp(argv[1],"2",10)) { pred = &cond2; }
@@ -69,6 +85,8 @@ int main (int argc, const char * argv[]) {
   csum=0;
   srand(time(0));
 
+
+  //CREATE THREADS 
   printf("Creating Producer:\n");
  	rc = pthread_create(&prod,NULL,Produce,(void *)0);
 	if (rc) {
@@ -82,10 +100,11 @@ int main (int argc, const char * argv[]) {
 			exit(-1);
 		}
 
+  //JOIN THREADS 
 	pthread_join( prod, NULL);
 	pthread_join( cons, NULL);
 
-
+  //
   printf("csum=%d.\n",csum);
 
   return 0;
