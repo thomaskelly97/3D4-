@@ -12,36 +12,42 @@ int pnum;  // number updated when producer runs.
 int csum;  // sum computed using pnum when consumer runs.
 
 //Create mutex variable 
-pthread_mutex_t mutex; 
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; 
 pthread_cond_t condc, condp; 
 
 int (*pred)(int); // predicate indicating number to be consumed
 
 int produceT() {
+
   scanf("%d",&pnum);
   return pnum;
+  
 }
 
 void *Produce(void *a) {
   int p;
   p=1;
+  pthread_mutex_lock(&mutex);
   while (p) {
-    pthread_mutex_lock(&mutex);
-   // pthread_cond_wait(&condc,&mutex);
+    //pthread_mutex_lock(&mutex);
+    //pthread_cond_wait(&condc,&mutex);
     printf("producer thinking...\n");
     sleep(1);
     printf("..done!\n");
     p = produceT();
     printf("PRODUCED %d\n",p);
-    
-    pthread_mutex_unlock(&mutex);
     pthread_cond_signal(&condc);
+    //pthread_mutex_unlock(&mutex);
+    //pthread_cond_signal(&condc);
   }
   printf("EXIT-P\n");
+  pthread_mutex_unlock(&mutex);
+  pthread_cond_signal(&condc);
 }
 
 
 int consumeT() {
+  pthread_mutex_lock(&mutex);
   if ( pred(pnum) ) { 
       csum += pnum; 
     }
@@ -52,17 +58,22 @@ void *Consume(void *a) {
   int p;
   p=1;
   while (p) {
-    pthread_mutex_lock(&mutex);
+   //pthread_mutex_lock(&mutex);
     pthread_cond_wait(&condc,&mutex);
+
     printf("consumer thinking...\n");
     sleep(rand()%3);
     printf("..done!\n");
     p = consumeT();
     printf("CONSUMED %d\n",csum);
+
     pthread_cond_signal(&condp);
-    pthread_mutex_unlock(&mutex);
+    sleep(1);
+    //pthread_cond_signal(&condp);
+    //pthread_mutex_unlock(&mutex);
   }
   printf("EXIT-C\n");
+  pthread_mutex_unlock(&mutex);
 }
 
 
