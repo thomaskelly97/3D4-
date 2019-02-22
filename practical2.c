@@ -12,16 +12,15 @@ int pnum;  // number updated when producer runs.
 int csum;  // sum computed using pnum when consumer runs.
 
 
-#define BSIZE 6
 
 typedef struct {
-    char buf[BSIZE];
-    int occupied;
-    int nextin;
-    int nextout;
+    char buf[1];
+    int bufSize;
+    int input;
+    int output;
     pthread_mutex_t mutex;
-    pthread_cond_t more;
-    pthread_cond_t less;
+    pthread_cond_t condP;
+    pthread_cond_t condC;
 } buffer_t;
 
 buffer_t buffer; // global buffer
@@ -32,21 +31,19 @@ int (*pred)(int); // predicate indicating number to be consumed
 int produceT(buffer_t *b) {
     pthread_mutex_lock(&b->mutex);
 
-    while (b->occupied >= BSIZE)
-        pthread_cond_wait(&b->less, &b->mutex);
+    while (b->bufSize >= 1){
+        pthread_cond_wait(&b->condC, &b->mutex); //Wait for 'condC' signal, WAIT if b->bufSize is greater than what is avaible. i.e. wait until it is decreased by consumer.
+    }
+    //---CRITICAL SECTION 
+    scanf("%d",&pnum); //scan from file 
+    assert(b->bufSize < 1); //if the value in b->bufSize condP than 1 throw an error  
+    b->buf[b->input++] = pnum; //place the value in the buffer, provided there have been no errors 
 
-    scanf("%d",&pnum);
-    assert(b->occupied < BSIZE);
-
-    b->buf[b->nextin++] = pnum;
-
-    b->nextin %= BSIZE;
-    b->occupied++;
-
-    pthread_cond_signal(&b->more);
-
+    b->input = b->input % 1; //wrap back around. 
+    b->bufSize++; //increment buffer array 
+    //---END CRITICAL SECTION 
+    pthread_cond_signal(&b->condP);
     pthread_mutex_unlock(&b->mutex);
-
     return pnum;
 }
 
@@ -67,16 +64,20 @@ void *Produce(void *a) {
 
 int consumeT(buffer_t *b) {
   pthread_mutex_lock(&b->mutex);
-    while(b->occupied <= 0)
-        pthread_cond_wait(&b->more, &b->mutex);
+    while(b->bufSize <= 0){
+        pthread_cond_wait(&b->condP, &b->mutex);
+    }
+    //---CRITICAL SECTION 
+    if ( pred(pnum) ) { 
+      csum += pnum; 
+      }
 
-    if ( pred(pnum) ) { csum += pnum; }
-    assert(b->occupied > 0);
-
-    pnum = b->buf[b->nextout++];
-    b->nextout %= BSIZE;
-    b->occupied--;
-    pthread_cond_signal(&b->less);
+    assert(b->bufSize > 0);
+    pnum = b->buf[b->output++]; //Make pnum = to buffer value corresponding to output 
+    b->output %= 1;
+    b->bufSize--;
+    //---END CRITICAL SECTION
+    pthread_cond_signal(&b->condC);
     pthread_mutex_unlock(&b->mutex);
   return pnum;
 }
@@ -99,12 +100,13 @@ int main (int argc, const char * argv[]) {
   // the current number predicate
   static pthread_t prod,cons;
 	long rc;
-  buffer.occupied = 0;
-  buffer.nextin = 0;
-  buffer.nextout = 0;
+  //INITIALISE all values of struct buffer
+  buffer.bufSize = 0;
+  buffer.input = 0;
+  buffer.output = 0;
   pthread_mutex_init(&buffer.mutex, NULL);
-  pthread_cond_init(&buffer.more,NULL);
-  pthread_cond_init(&buffer.less,NULL);
+  pthread_cond_init(&buffer.condP,NULL);
+  pthread_cond_init(&buffer.condC,NULL);
 
 
   pred = &cond1;
@@ -135,5 +137,8 @@ int main (int argc, const char * argv[]) {
 
   printf("csum=%d.\n",csum);
 
+  pthread_mutex_destroy(&buffer.mutex);
+  pthread_cond_destroy(&buffer.condP);
+  pthread_cond_destroy(&buffer.condC);
   return 0;
 }
