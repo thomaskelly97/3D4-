@@ -12,24 +12,24 @@ int pnum;  // number updated when producer runs.
 int csum;  // sum computed using pnum when consumer runs.
 
 
-
+//create struct for buffer
 typedef struct {
     char buf[1];
     int bufSize;
-    int input;
-    int output;
+    int input; //incoming value to buffer
+    int output; //outgoing value 
     pthread_mutex_t mutex;
-    pthread_cond_t condP;
+    pthread_cond_t condP; //conditional variables, mutex
     pthread_cond_t condC;
 } buffer_t;
 
-buffer_t buffer; // global buffer
+buffer_t buffer; 
 
 
 int (*pred)(int); // predicate indicating number to be consumed
 
 int produceT(buffer_t *b) {
-    pthread_mutex_lock(&b->mutex);
+    pthread_mutex_lock(&b->mutex); //acquire mutex
 
     while (b->bufSize >= 1){
         pthread_cond_wait(&b->condC, &b->mutex); //Wait for 'condC' signal, WAIT if b->bufSize is greater than what is avaible. i.e. wait until it is decreased by consumer.
@@ -42,7 +42,7 @@ int produceT(buffer_t *b) {
     b->input = b->input % 1; //wrap back around. 
     b->bufSize++; //increment buffer array 
     //---END CRITICAL SECTION 
-    pthread_cond_signal(&b->condP);
+    pthread_cond_signal(&b->condP); //pass control to consumer thread 
     pthread_mutex_unlock(&b->mutex);
     return pnum;
 }
@@ -65,11 +65,11 @@ void *Produce(void *a) {
 int consumeT(buffer_t *b) {
   pthread_mutex_lock(&b->mutex);
     while(b->bufSize <= 0){
-        pthread_cond_wait(&b->condP, &b->mutex);
+        pthread_cond_wait(&b->condP, &b->mutex); //wait for signal from producer thread 
     }
     //---CRITICAL SECTION 
     if ( pred(pnum) ) { 
-      csum += pnum; 
+      csum += pnum; //add to total csum 
       }
 
     assert(b->bufSize > 0);
@@ -77,7 +77,7 @@ int consumeT(buffer_t *b) {
     b->output %= 1;
     b->bufSize--;
     //---END CRITICAL SECTION
-    pthread_cond_signal(&b->condC);
+    pthread_cond_signal(&b->condC); //pass control back to producer thread
     pthread_mutex_unlock(&b->mutex);
   return pnum;
 }
@@ -109,10 +109,10 @@ int main (int argc, const char * argv[]) {
   pthread_cond_init(&buffer.condC,NULL);
 
 
-  pred = &cond1;
+  pred = &cond1; //add odd numbers = 100
   if (argc>1) {
-    if      (!strncmp(argv[1],"2",10)) { pred = &cond2; }
-    else if (!strncmp(argv[1],"3",10)) { pred = &cond3; }
+    if      (!strncmp(argv[1],"2",10)) { pred = &cond2; } //should return 110, add even numbers
+    else if (!strncmp(argv[1],"3",10)) { pred = &cond3; } //adds all numbers divisble by 3, should be 63
   }
 
   pnum = 999;
@@ -137,6 +137,7 @@ int main (int argc, const char * argv[]) {
 
   printf("csum=%d.\n",csum);
 
+    //destroy pthread varaibles
   pthread_mutex_destroy(&buffer.mutex);
   pthread_cond_destroy(&buffer.condP);
   pthread_cond_destroy(&buffer.condC);
