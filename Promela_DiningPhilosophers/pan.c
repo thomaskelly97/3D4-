@@ -477,18 +477,20 @@ int _;	/* predefined write-only variable */
 #endif
 
 short src_ln0 [] = {
-	  0,  23,  24,  25,  28,  31,  32,  30, 
-	 37,  38,  36,  41,  42,  43,  45,  46, 
-	 48,  49,   0, };
+	  0,  19,  20,  21,  24,  28,  29,  30, 
+	 31,  27,  33,  26,  34,  26,  37,  38, 
+	 39,  40,  36,  42,  35,  44,  35,  44, 
+	 45,  46,  48,  49,  51,  52,   0, };
 S_F_MAP src_file0 [] = {
 	{ "-", 0, 0 },
-	{ "dphil0.pml", 1, 17 },
-	{ "-", 18, 19 }
+	{ "dphil0.pml", 1, 29 },
+	{ "-", 30, 31 }
 };
 uchar reached0 [] = {
-	  0,   0,   0,   0,   0,   1,   0,   0, 
-	  1,   0,   0,   0,   0,   0,   0,   0, 
-	  1,   0,   0, };
+	  0,   0,   0,   0,   0,   1,   1,   1, 
+	  1,   1,   1,   0,   1,   1,   1,   1, 
+	  1,   1,   1,   1,   0,   1,   1,   0, 
+	  0,   0,   0,   0,   1,   0,   0, };
 uchar *loopstate0;
 uchar reached1[3];  /* np_ */
 uchar *loopstate1;  /* np_ */
@@ -907,7 +909,7 @@ run(void)
 	if ((Maxbody % WS) != 0)
 		Maxbody += WS - (Maxbody % WS);
 
-	progstate[0][13] = 1;
+	progstate[0][25] = 1;
 	retrans(0, _nstates0, _start0, src_ln0, reached0, loopstate0);
 	if (state_tables)
 	{ if (dodot) exit(0);
@@ -12230,7 +12232,6 @@ iniglobals(int calling_pid)
 			now.Fork[l_in] = 0;
 		}
 	}
-		mutex = 0;
 #ifdef VAR_RANGES
 	{	int l_in;
 		for (l_in = 0; l_in < 25; l_in++)
@@ -13973,7 +13974,7 @@ c_chandump(int unused)
 {	unused++; /* avoid complaints */
 }
 
-Trans *t_id_lkup[17];
+Trans *t_id_lkup[29];
 
 
 #ifdef BFS_PAR

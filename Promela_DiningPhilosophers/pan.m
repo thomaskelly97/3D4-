@@ -20,7 +20,7 @@
 		_m = 3; goto P999;
 
 		 /* PROC phil */
-	case 3: // STATE 1 - dphil0.pml:23 - [p = _pid] (0:4:3 - 1)
+	case 3: // STATE 1 - dphil0.pml:19 - [p = _pid] (0:4:3 - 1)
 		IfNotBlocked
 		reached[0][1] = 1;
 		(trpt+1)->bup.ovals = grab_ints(3);
@@ -47,17 +47,19 @@
 #endif
 		;
 		_m = 3; goto P999; /* 2 */
-	case 4: // STATE 4 - dphil0.pml:28 - [printf('P%d thinks..\\n',_pid)] (0:0:0 - 3)
+	case 4: // STATE 4 - dphil0.pml:24 - [printf('P%d thinks..\\n',_pid)] (0:0:0 - 3)
 		IfNotBlocked
 		reached[0][4] = 1;
 		Printf("P%d thinks..\n", ((int)((P0 *)this)->_pid));
 		_m = 3; goto P999; /* 0 */
-	case 5: // STATE 5 - dphil0.pml:31 - [((Fork[(((5*p)+lfork)%5)]==0))] (10:0:1 - 1)
+	case 5: // STATE 5 - dphil0.pml:28 - [((Fork[((5*p)+lfork)]==0))] (0:0:0 - 1)
 		IfNotBlocked
 		reached[0][5] = 1;
-		if (!((((int)now.Fork[ Index((((5*((P0 *)this)->p)+((P0 *)this)->lfork)%5), 25) ])==0)))
+		if (!((((int)now.Fork[ Index(((5*((P0 *)this)->p)+((P0 *)this)->lfork), 25) ])==0)))
 			continue;
-		/* merge: Fork[((5*p)+lfork)] = 1(0, 6, 10) */
+		_m = 3; goto P999; /* 0 */
+	case 6: // STATE 6 - dphil0.pml:29 - [Fork[((5*p)+lfork)] = 1] (0:0:1 - 1)
+		IfNotBlocked
 		reached[0][6] = 1;
 		(trpt+1)->bup.oval = ((int)now.Fork[ Index(((5*((P0 *)this)->p)+((P0 *)this)->lfork), 25) ]);
 		now.Fork[ Index(((5*((P0 *)this)->p)+((P0 *)this)->lfork), 25) ] = 1;
@@ -65,39 +67,51 @@
 		logval("Fork[((5*phil:p)+phil:lfork)]", ((int)now.Fork[ Index(((5*((P0 *)this)->p)+((P0 *)this)->lfork), 25) ]));
 #endif
 		;
-		_m = 3; goto P999; /* 1 */
-	case 6: // STATE 8 - dphil0.pml:37 - [((Fork[(((5*p)+lfork)%5)]==0))] (11:0:1 - 1)
+		_m = 3; goto P999; /* 0 */
+	case 7: // STATE 7 - dphil0.pml:30 - [printf('P%d picks up fork F%d\\n',_pid,lfork)] (0:0:0 - 1)
 		IfNotBlocked
-		reached[0][8] = 1;
-		if (!((((int)now.Fork[ Index((((5*((P0 *)this)->p)+((P0 *)this)->lfork)%5), 25) ])==0)))
+		reached[0][7] = 1;
+		Printf("P%d picks up fork F%d\n", ((int)((P0 *)this)->_pid), ((P0 *)this)->lfork);
+		_m = 3; goto P999; /* 0 */
+	case 8: // STATE 14 - dphil0.pml:37 - [((Fork[((5*p)+rfork)]==0))] (0:0:0 - 1)
+		IfNotBlocked
+		reached[0][14] = 1;
+		if (!((((int)now.Fork[ Index(((5*((P0 *)this)->p)+((P0 *)this)->rfork), 25) ])==0)))
 			continue;
-		/* merge: Fork[((5*p)+rfork)] = 1(0, 9, 11) */
-		reached[0][9] = 1;
+		_m = 3; goto P999; /* 0 */
+	case 9: // STATE 15 - dphil0.pml:38 - [Fork[((5*p)+rfork)] = 1] (0:0:1 - 1)
+		IfNotBlocked
+		reached[0][15] = 1;
 		(trpt+1)->bup.oval = ((int)now.Fork[ Index(((5*((P0 *)this)->p)+((P0 *)this)->rfork), 25) ]);
 		now.Fork[ Index(((5*((P0 *)this)->p)+((P0 *)this)->rfork), 25) ] = 1;
 #ifdef VAR_RANGES
 		logval("Fork[((5*phil:p)+phil:rfork)]", ((int)now.Fork[ Index(((5*((P0 *)this)->p)+((P0 *)this)->rfork), 25) ]));
 #endif
 		;
-		_m = 3; goto P999; /* 1 */
-	case 7: // STATE 11 - dphil0.pml:41 - [assert(!((((Fork[((5*((p+1)%5))+lfork)]||Fork[((5*((p+2)%5))+lfork)])||Fork[((5*((p+3)%5))+lfork)])||Fork[((5*((p+4)%5))+lfork)])))] (0:0:0 - 1)
-		IfNotBlocked
-		reached[0][11] = 1;
-		spin_assert( !((((((int)now.Fork[ Index(((5*((((P0 *)this)->p+1)%5))+((P0 *)this)->lfork), 25) ])||((int)now.Fork[ Index(((5*((((P0 *)this)->p+2)%5))+((P0 *)this)->lfork), 25) ]))||((int)now.Fork[ Index(((5*((((P0 *)this)->p+3)%5))+((P0 *)this)->lfork), 25) ]))||((int)now.Fork[ Index(((5*((((P0 *)this)->p+4)%5))+((P0 *)this)->lfork), 25) ]))), " !((((Fork[((5*((p+1)%5))+lfork)]||Fork[((5*((p+2)%5))+lfork)])||Fork[((5*((p+3)%5))+lfork)])||Fork[((5*((p+4)%5))+lfork)]))", II, tt, t);
 		_m = 3; goto P999; /* 0 */
-	case 8: // STATE 12 - dphil0.pml:42 - [assert(!((((Fork[((5*((p+1)%5))+rfork)]||Fork[((5*((p+2)%5))+rfork)])||Fork[((5*((p+3)%5))+rfork)])||Fork[((5*((p+4)%5))+rfork)])))] (0:0:0 - 1)
+	case 10: // STATE 16 - dphil0.pml:39 - [printf('P%d picks up fork F%d\\n',_pid,rfork)] (0:0:0 - 1)
 		IfNotBlocked
-		reached[0][12] = 1;
-		spin_assert( !((((((int)now.Fork[ Index(((5*((((P0 *)this)->p+1)%5))+((P0 *)this)->rfork), 25) ])||((int)now.Fork[ Index(((5*((((P0 *)this)->p+2)%5))+((P0 *)this)->rfork), 25) ]))||((int)now.Fork[ Index(((5*((((P0 *)this)->p+3)%5))+((P0 *)this)->rfork), 25) ]))||((int)now.Fork[ Index(((5*((((P0 *)this)->p+4)%5))+((P0 *)this)->rfork), 25) ]))), " !((((Fork[((5*((p+1)%5))+rfork)]||Fork[((5*((p+2)%5))+rfork)])||Fork[((5*((p+3)%5))+rfork)])||Fork[((5*((p+4)%5))+rfork)]))", II, tt, t);
+		reached[0][16] = 1;
+		Printf("P%d picks up fork F%d\n", ((int)((P0 *)this)->_pid), ((P0 *)this)->rfork);
 		_m = 3; goto P999; /* 0 */
-	case 9: // STATE 13 - dphil0.pml:43 - [printf('P%d eats!\\n',_pid)] (0:0:0 - 1)
+	case 11: // STATE 23 - dphil0.pml:44 - [assert((((Fork[((5*((p+1)%5))+lfork)]||Fork[((5*((p+2)%5))+lfork)])||Fork[((5*((p+3)%5))+lfork)])||Fork[((5*((p+4)%5))+lfork)]))] (0:0:0 - 3)
 		IfNotBlocked
-		reached[0][13] = 1;
+		reached[0][23] = 1;
+		spin_assert((((((int)now.Fork[ Index(((5*((((P0 *)this)->p+1)%5))+((P0 *)this)->lfork), 25) ])||((int)now.Fork[ Index(((5*((((P0 *)this)->p+2)%5))+((P0 *)this)->lfork), 25) ]))||((int)now.Fork[ Index(((5*((((P0 *)this)->p+3)%5))+((P0 *)this)->lfork), 25) ]))||((int)now.Fork[ Index(((5*((((P0 *)this)->p+4)%5))+((P0 *)this)->lfork), 25) ])), "(((Fork[((5*((p+1)%5))+lfork)]||Fork[((5*((p+2)%5))+lfork)])||Fork[((5*((p+3)%5))+lfork)])||Fork[((5*((p+4)%5))+lfork)])", II, tt, t);
+		_m = 3; goto P999; /* 0 */
+	case 12: // STATE 24 - dphil0.pml:45 - [assert((((Fork[((5*((p+1)%5))+rfork)]||Fork[((5*((p+2)%5))+rfork)])||Fork[((5*((p+3)%5))+rfork)])||Fork[((5*((p+4)%5))+rfork)]))] (0:0:0 - 1)
+		IfNotBlocked
+		reached[0][24] = 1;
+		spin_assert((((((int)now.Fork[ Index(((5*((((P0 *)this)->p+1)%5))+((P0 *)this)->rfork), 25) ])||((int)now.Fork[ Index(((5*((((P0 *)this)->p+2)%5))+((P0 *)this)->rfork), 25) ]))||((int)now.Fork[ Index(((5*((((P0 *)this)->p+3)%5))+((P0 *)this)->rfork), 25) ]))||((int)now.Fork[ Index(((5*((((P0 *)this)->p+4)%5))+((P0 *)this)->rfork), 25) ])), "(((Fork[((5*((p+1)%5))+rfork)]||Fork[((5*((p+2)%5))+rfork)])||Fork[((5*((p+3)%5))+rfork)])||Fork[((5*((p+4)%5))+rfork)])", II, tt, t);
+		_m = 3; goto P999; /* 0 */
+	case 13: // STATE 25 - dphil0.pml:46 - [printf('P%d eats!\\n',_pid)] (0:0:0 - 1)
+		IfNotBlocked
+		reached[0][25] = 1;
 		Printf("P%d eats!\n", ((int)((P0 *)this)->_pid));
 		_m = 3; goto P999; /* 0 */
-	case 10: // STATE 14 - dphil0.pml:45 - [Fork[((5*p)+lfork)] = 0] (0:0:1 - 1)
+	case 14: // STATE 26 - dphil0.pml:48 - [Fork[((5*p)+lfork)] = 0] (0:0:1 - 1)
 		IfNotBlocked
-		reached[0][14] = 1;
+		reached[0][26] = 1;
 		(trpt+1)->bup.oval = ((int)now.Fork[ Index(((5*((P0 *)this)->p)+((P0 *)this)->lfork), 25) ]);
 		now.Fork[ Index(((5*((P0 *)this)->p)+((P0 *)this)->lfork), 25) ] = 0;
 #ifdef VAR_RANGES
@@ -105,9 +119,9 @@
 #endif
 		;
 		_m = 3; goto P999; /* 0 */
-	case 11: // STATE 15 - dphil0.pml:46 - [Fork[((5*p)+rfork)] = 0] (0:0:1 - 1)
+	case 15: // STATE 27 - dphil0.pml:49 - [Fork[((5*p)+rfork)] = 0] (0:0:1 - 1)
 		IfNotBlocked
-		reached[0][15] = 1;
+		reached[0][27] = 1;
 		(trpt+1)->bup.oval = ((int)now.Fork[ Index(((5*((P0 *)this)->p)+((P0 *)this)->rfork), 25) ]);
 		now.Fork[ Index(((5*((P0 *)this)->p)+((P0 *)this)->rfork), 25) ] = 0;
 #ifdef VAR_RANGES

@@ -26,30 +26,46 @@ settable(void)
 
 	/* proctype 0: phil */
 
-	trans[0] = (Trans **) emalloc(18*sizeof(Trans *));
+	trans[0] = (Trans **) emalloc(30*sizeof(Trans *));
 
 	trans[0][1]	= settr(0,0,4,3,3,"p = _pid", 0, 2, 0); /* m: 2 -> 0,4 */
 	reached0[2] = 1;
 	trans[0][2]	= settr(0,0,0,0,0,"lfork = (p%5)",0,0,0);
 	trans[0][3]	= settr(0,0,0,0,0,"rfork = ((p+1)%5)",0,0,0);
-	trans[0][4]	= settr(3,0,7,4,0,"printf('P%d thinks..\\n',_pid)", 0, 2, 0);
-	T = trans[ 0][7] = settr(6,2,0,0,0,"ATOMIC", 1, 2, 0);
-	T->nxt	= settr(6,2,5,0,0,"ATOMIC", 1, 2, 0);
-	trans[0][5]	= settr(4,4,10,5,5,"((Fork[(((5*p)+lfork)%5)]==0))", 1, 2, 0); /* m: 6 -> 10,0 */
-	reached0[6] = 1;
-	trans[0][6]	= settr(0,0,0,0,0,"Fork[((5*p)+lfork)] = 1",0,0,0);
-	T = trans[ 0][10] = settr(9,2,0,0,0,"ATOMIC", 1, 2, 0);
-	T->nxt	= settr(9,2,8,0,0,"ATOMIC", 1, 2, 0);
-	trans[0][8]	= settr(7,4,11,6,6,"((Fork[(((5*p)+lfork)%5)]==0))", 1, 2, 0); /* m: 9 -> 11,0 */
-	reached0[9] = 1;
-	trans[0][9]	= settr(0,0,0,0,0,"Fork[((5*p)+rfork)] = 1",0,0,0);
-	trans[0][11]	= settr(10,0,12,7,0,"assert(!((((Fork[((5*((p+1)%5))+lfork)]||Fork[((5*((p+2)%5))+lfork)])||Fork[((5*((p+3)%5))+lfork)])||Fork[((5*((p+4)%5))+lfork)])))", 1, 2, 0);
-	trans[0][12]	= settr(11,0,13,8,0,"assert(!((((Fork[((5*((p+1)%5))+rfork)]||Fork[((5*((p+2)%5))+rfork)])||Fork[((5*((p+3)%5))+rfork)])||Fork[((5*((p+4)%5))+rfork)])))", 1, 2, 0);
-	trans[0][13]	= settr(12,0,14,9,0,"printf('P%d eats!\\n',_pid)", 0, 2, 0);
-	trans[0][14]	= settr(13,0,15,10,10,"Fork[((5*p)+lfork)] = 0", 1, 2, 0);
-	trans[0][15]	= settr(14,0,4,11,11,"Fork[((5*p)+rfork)] = 0", 1, 2, 0);
-	trans[0][16]	= settr(15,0,4,1,0,"goto think", 0, 2, 0);
-	trans[0][17]	= settr(0,0,0,0,0,"-end-",0,0,0);
+	trans[0][4]	= settr(3,0,11,4,0,"printf('P%d thinks..\\n',_pid)", 0, 2, 0);
+	trans[0][12]	= settr(11,0,11,1,0,".(goto)", 0, 2, 0);
+	T = trans[0][11] = settr(10,0,0,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(10,0,9,0,0,"DO", 0, 2, 0);
+	T = trans[0][9] = settr(8,0,0,0,0,"IF", 0, 2, 0);
+	T = T->nxt	= settr(8,0,5,0,0,"IF", 0, 2, 0);
+	T = T->nxt	= settr(8,0,6,0,0,"IF", 0, 2, 0);
+	    T->nxt	= settr(8,0,7,0,0,"IF", 0, 2, 0);
+	trans[0][5]	= settr(4,0,11,5,0,"((Fork[((5*p)+lfork)]==0))", 1, 2, 0);
+	trans[0][10]	= settr(9,0,11,1,0,".(goto)", 0, 2, 0);
+	trans[0][6]	= settr(5,0,11,6,6,"Fork[((5*p)+lfork)] = 1", 1, 2, 0);
+	trans[0][7]	= settr(6,0,20,7,0,"printf('P%d picks up fork F%d\\n',_pid,lfork)", 0, 2, 0);
+	trans[0][8]	= settr(7,0,20,1,0,"goto :b0", 0, 2, 0);
+	trans[0][13]	= settr(12,0,20,1,0,"break", 0, 2, 0);
+	trans[0][21]	= settr(20,0,20,1,0,".(goto)", 0, 2, 0);
+	T = trans[0][20] = settr(19,0,0,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(19,0,18,0,0,"DO", 0, 2, 0);
+	T = trans[0][18] = settr(17,0,0,0,0,"IF", 0, 2, 0);
+	T = T->nxt	= settr(17,0,14,0,0,"IF", 0, 2, 0);
+	T = T->nxt	= settr(17,0,15,0,0,"IF", 0, 2, 0);
+	    T->nxt	= settr(17,0,16,0,0,"IF", 0, 2, 0);
+	trans[0][14]	= settr(13,0,20,8,0,"((Fork[((5*p)+rfork)]==0))", 1, 2, 0);
+	trans[0][19]	= settr(18,0,20,1,0,".(goto)", 0, 2, 0);
+	trans[0][15]	= settr(14,0,20,9,9,"Fork[((5*p)+rfork)] = 1", 1, 2, 0);
+	trans[0][16]	= settr(15,0,23,10,0,"printf('P%d picks up fork F%d\\n',_pid,rfork)", 0, 2, 0);
+	trans[0][17]	= settr(16,0,23,1,0,"goto :b1", 0, 2, 0);
+	trans[0][22]	= settr(21,0,23,1,0,"break", 0, 2, 0);
+	trans[0][23]	= settr(22,0,24,11,0,"assert((((Fork[((5*((p+1)%5))+lfork)]||Fork[((5*((p+2)%5))+lfork)])||Fork[((5*((p+3)%5))+lfork)])||Fork[((5*((p+4)%5))+lfork)]))", 1, 2, 0);
+	trans[0][24]	= settr(23,0,25,12,0,"assert((((Fork[((5*((p+1)%5))+rfork)]||Fork[((5*((p+2)%5))+rfork)])||Fork[((5*((p+3)%5))+rfork)])||Fork[((5*((p+4)%5))+rfork)]))", 1, 2, 0);
+	trans[0][25]	= settr(24,0,26,13,0,"printf('P%d eats!\\n',_pid)", 0, 2, 0);
+	trans[0][26]	= settr(25,0,27,14,14,"Fork[((5*p)+lfork)] = 0", 1, 2, 0);
+	trans[0][27]	= settr(26,0,4,15,15,"Fork[((5*p)+rfork)] = 0", 1, 2, 0);
+	trans[0][28]	= settr(27,0,4,1,0,"goto think", 0, 2, 0);
+	trans[0][29]	= settr(0,0,0,0,0,"-end-",0,0,0);
 	/* np_ demon: */
 	trans[_NP_] = (Trans **) emalloc(2*sizeof(Trans *));
 	T = trans[_NP_][0] = settr(9997,0,1,_T5,0,"(np_)", 1,2,0);

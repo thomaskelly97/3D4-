@@ -14,14 +14,20 @@
 		goto R999;
 ;
 		;
+		;
+		;
 		
-	case 5: // STATE 6
+	case 6: // STATE 6
 		;
 		now.Fork[ Index(((5*((P0 *)this)->p)+((P0 *)this)->lfork), 25) ] = trpt->bup.oval;
 		;
 		goto R999;
-
-	case 6: // STATE 9
+;
+		;
+		;
+		;
+		
+	case 9: // STATE 15
 		;
 		now.Fork[ Index(((5*((P0 *)this)->p)+((P0 *)this)->rfork), 25) ] = trpt->bup.oval;
 		;
@@ -32,14 +38,16 @@
 		;
 		;
 		;
+		;
+		;
 		
-	case 10: // STATE 14
+	case 14: // STATE 26
 		;
 		now.Fork[ Index(((5*((P0 *)this)->p)+((P0 *)this)->lfork), 25) ] = trpt->bup.oval;
 		;
 		goto R999;
 
-	case 11: // STATE 15
+	case 15: // STATE 27
 		;
 		now.Fork[ Index(((5*((P0 *)this)->p)+((P0 *)this)->rfork), 25) ] = trpt->bup.oval;
 		;
