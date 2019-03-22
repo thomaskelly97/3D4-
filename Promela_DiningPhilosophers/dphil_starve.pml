@@ -5,6 +5,7 @@
 /*  fork[NUM][NUM] where fork[p][f] is true if 'p' holds 'f' */
 
 bool Fork[NUM*NUM] = {0}; /* 2-d arrays not supported, so ... */
+int i = 0; 
 
 #define FORK(p,f) Fork[NUM*p+f]
 #define leftFork(p) (p%NUM)

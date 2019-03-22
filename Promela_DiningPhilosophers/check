@@ -1,23 +1,24 @@
 echo "ANALYSIS STARTS"
-rm dphil.pml.trail
+rm *.trail
 
 echo "SIMULATE 100 STEPS"
-run spin -u100 dphil.pml
+spin -u100 dphil.pml
 echo ""
 
 echo "COMPILE VERIFIER"
-spin -a dphil.c 
 cc -o pan pan.c 
-./pan 
+./pan
+
 echo ""
 
 echo "STANDARD VERIFICATION"
-spin -p -t model.pml 
+cc -DREACH -o pan pan.c 
+./pan
 echo ""
 
 echo "PROGRESS VERIFICATION"
-spin -a dphil.c 
 cc -DNP -o pan pan.c 
-./pan -l
+./pan
+
 echo ""
 echo "ANALYSIS COMPLETE"
