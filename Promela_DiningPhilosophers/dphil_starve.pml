@@ -1,4 +1,5 @@
-
+//Thomas Kelly 
+//16323455
 #define NUM 5 /* Number of philosophers, and forks! */
 
 /* We want to record which philosopher is holding which fork */
@@ -15,7 +16,7 @@ bool Fork[NUM*NUM] = {0}; /* 2-d arrays not supported, so ... */
                            || FORK(((p+3)%NUM),f) \
                            || FORK(((p+4)%NUM),f) )
 
-bool eats = false, hungry = false;  
+bool eats = false, hungry = false;  //flags for hungry/eats 
 active [NUM] proctype phil()
 { int p, lfork, rfork, i = 0; 
 
@@ -30,14 +31,14 @@ active [NUM] proctype phil()
   firstfork:  
     atomic {
       if
-      :: (FORK(p,lfork) == 0) -> FORK(p,lfork) = 1; printf("P%d picked up F%d\n", p, lfork);  
+      :: (myForkOnly(p,lfork) == 1) -> FORK(p,lfork) = 1; printf("P%d picked up F%d\n", p, lfork);  
       fi 
     }
 
   secondfork: 
     atomic {
       if
-      ::(FORK(p,lfork) == 0) -> FORK(p,rfork) = 1; printf("P%d picked up F%d\n", p, rfork); 
+      ::(myForkOnly(p,rfork) == 1) -> FORK(p,rfork) = 1; printf("P%d picked up F%d\n", p, rfork); 
       fi 
     } 
   
@@ -56,6 +57,7 @@ active [NUM] proctype phil()
   goto think
 }
 
+//the never claim below is generated using the command spin -f '!([](hungry -> <>eats))'
 never  {    /* !([](hungry -> <>eats)) */
 T0_init:
         do

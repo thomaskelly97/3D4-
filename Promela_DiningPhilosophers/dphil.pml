@@ -1,4 +1,5 @@
-
+//Thomas Kelly 
+//16323455 
 #define NUM 5 /* Number of philosophers, and forks! */
 
 /* We want to record which philosopher is holding which fork */
@@ -27,14 +28,18 @@ active [NUM] proctype phil()
   firstfork:  
     atomic {
       if
-      :: (FORK(p,lfork) == 0) -> FORK(p,lfork) = true; printf("P%d picked up F%d\n", p, lfork); 
+      ::(myForkOnly(p,lfork) == true) -> 
+      FORK(p,lfork) = true; 
+      printf("P%d picked up F%d\n", p, lfork); //If fork is unpicked, allow pick up 
       fi 
     }
 
   secondfork: 
     atomic {
       if
-      ::(FORK(p,lfork) == 0) -> FORK(p,rfork) = true; printf("P%d picked up F%d\n", p, rfork);
+      ::(myForkOnly(p,rfork) == true) -> 
+      FORK(p,rfork) = true; 
+      printf("P%d picked up F%d\n", p, rfork);
       fi 
     } 
 
