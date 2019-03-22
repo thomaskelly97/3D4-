@@ -6,6 +6,7 @@ spin -u100 dphil.pml
 echo ""
 
 echo "COMPILE VERIFIER"
+spin -a dphil.pml 
 cc -o pan pan.c 
 ./pan
 
@@ -17,8 +18,16 @@ cc -DREACH -o pan pan.c
 echo ""
 
 echo "PROGRESS VERIFICATION"
+s
 cc -DNP -o pan pan.c 
 ./pan
 
 echo ""
+
+echo "CHECK STARVATION"
+spin -a dphil_starve.pml
+cc -o DNFAIR=3 -o pan pan.c 
+./pan -a -f
+spin -p -t dphil_starve.pml
+
 echo "ANALYSIS COMPLETE"

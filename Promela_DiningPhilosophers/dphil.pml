@@ -18,6 +18,7 @@ bool Fork[NUM*NUM] = {0}; /* 2-d arrays not supported, so ... */
 
 active [NUM] proctype phil()
 { int p, lfork, rfork ;
+
   p = _pid;
   lfork = leftFork(p);
   rfork = rightFork(p);

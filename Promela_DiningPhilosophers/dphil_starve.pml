@@ -6,7 +6,7 @@
 
 bool Fork[NUM*NUM] = {0}; /* 2-d arrays not supported, so ... */
 
-
+#define s (![](hungry -> <>eats));
 #define FORK(p,f) Fork[NUM*p+f]
 #define leftFork(p) (p%NUM)
 #define rightFork(p) ((p+1)%NUM)
@@ -15,27 +15,29 @@ bool Fork[NUM*NUM] = {0}; /* 2-d arrays not supported, so ... */
                            || FORK(((p+3)%NUM),f) \
                            || FORK(((p+4)%NUM),f) )
 
+bool eats = false, hungry = false;  
 active [NUM] proctype phil()
 { int p, lfork, rfork, i = 0; 
-  bool eats = false; 
+
+  
   p = _pid;
   lfork = leftFork(p);
   rfork = rightFork(p);
 
-  think: //start timer  
-    printf("P%d thinks..\n",_pid);
-    i = i + 1; //increment counter 
+  think: printf("P%d thinks..\n",_pid); hungry = true;
+  
+
   firstfork:  
     atomic {
       if
-      :: (FORK(p,lfork) == 0) -> FORK(p,lfork) = true; printf("P%d picked up F%d\n", p, lfork); 
+      :: (FORK(p,lfork) == 0) -> FORK(p,lfork) = 1; printf("P%d picked up F%d\n", p, lfork);  
       fi 
     }
 
   secondfork: 
     atomic {
       if
-      ::(FORK(p,lfork) == 0) -> FORK(p,rfork) = true; printf("P%d picked up F%d\n", p, rfork);
+      ::(FORK(p,lfork) == 0) -> FORK(p,rfork) = 1; printf("P%d picked up F%d\n", p, rfork); 
       fi 
     } 
   
@@ -43,10 +45,25 @@ active [NUM] proctype phil()
   assert(myForkOnly(p,rfork));
   progress_eat: printf("P%d eats!\n",_pid); eats = true; 
 
+  hungry = false; 
 
+ 
   dropfork1: FORK(p,lfork) = false;
   printf("P%d DROPS F%d\n", p, FORK(p,lfork));
   dropfork2: FORK(p,rfork) = false;
   printf("P%d DROPS F%d\n", p, FORK(p,rfork));
+ 
   goto think
+}
+
+never  {    /* !([](hungry -> <>eats)) */
+T0_init:
+        do
+        :: (! ((eats)) && (hungry)) -> goto accept_S4
+        :: (1) -> goto T0_init
+        od;
+accept_S4:
+        do
+        :: (! ((eats))) -> goto accept_S4
+        od;
 }
